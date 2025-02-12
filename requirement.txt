@@ -1,0 +1,8 @@
+sounddevice=0.5.1
+torch=2.6.0+cu118
+numpy=2.1.1
+scipy.io.wavfile=1.14.1
+whisper=1.1.10
+webbrowser=2.3.0
+AppOpener=1.7
+pyttsx3=2.98
