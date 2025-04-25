@@ -4,6 +4,9 @@ from pydantic import BaseModel
 import requests
 import json
 import whisper
+import smtplib
+from email.mime.text import MIMEText
+
 
 model = whisper.load_model("base")
 
@@ -68,14 +71,19 @@ def process(audioFile):
     text = text.lower()
     return text
 
-@app.post("/whisper_test")
+@app.post("/transcribe")
 async def upload_mp3(file: UploadFile = File(...)):
     file_path = "song.mp3"  # Choose your desired file name and path
     with open(file_path, "wb") as f:
         f.write(file.file.read())
-    m2=(f"MP3 file saved to {file_path}")
+    
     text = process(file_path)
-    return {"message": text, "m2":m2}
+    s = smtplib.SMTP('smtp.gmail.com', 587)
+    s.starttls()
+    s.login("ericwaterhouse36@gmail.com", "uteq zwwx vnzl fvyg")
+    s.sendmail("ericwaterhouse36@gmail.com", "eric.waterhouse26@houghton.edu", text)
+    s.quit()
+    return {"message": "Email sent..."}
 
 @app.post("/generate_text")
 async def upload_mp3(file: UploadFile = File(...)):
@@ -86,3 +94,42 @@ async def upload_mp3(file: UploadFile = File(...)):
     text = process(file_path)
     res = llm(text)
     return {"message": res, "m2":m2}
+
+@app.post("/summary")
+async def upload_mp3(file: UploadFile = File(...)):
+    file_path = "audio.mp3"  # Choose your desired file name and path
+    with open(file_path, "wb") as f:
+        f.write(file.file.read())
+    m2=(f"MP3 file saved to {file_path}")
+    text = process(file_path)
+    res = llm("Generate a short summary of this lecture: " + text)
+    return {"message": text}
+
+@app.post("/study_questions")
+async def upload_mp3(file: UploadFile = File(...)):
+    file_path = "audio.mp3"  # Choose your desired file name and path
+    with open(file_path, "wb") as f:
+        f.write(file.file.read())
+    m2=(f"MP3 file saved to {file_path}")
+    text = process(file_path)
+    res = llm("Generate 10 study questions based on this lecture: " + text)
+    return {"message": text}
+
+
+
+@app.post("/all")
+async def upload_mp3(file: UploadFile = File(...)):
+    file_path = "audio.mp3"  # Choose your desired file name and path
+    with open(file_path, "wb") as f:
+        f.write(file.file.read())
+    m2=(f"MP3 file saved to {file_path}")
+    text = process(file_path)
+    summary = llm("Generate a short summary of this lecture: " + text)
+    study = llm("Generate 10 study questions based on this lecture: " + text)
+    s = smtplib.SMTP('smtp.gmail.com', 587)
+    s.starttls()
+    s.login("ericwaterhouse36@gmail.com", "uteq zwwx vnzl fvyg")
+    s.sendmail("ericwaterhouse36@gmail.com", "eric.waterhouse26@houghton.edu", summary)
+    s.sendmail("ericwaterhouse36@gmail.com", "eric.waterhouse26@houghton.edu", study)
+    s.quit()
+    return {"message": "Emails sent. Hopefully this works!"}
