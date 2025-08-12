@@ -80,8 +80,8 @@ async def upload_mp3(file: UploadFile = File(...)):
     text = process(file_path)
     s = smtplib.SMTP('smtp.gmail.com', 587)
     s.starttls()
-    s.login("ericwaterhouse36@gmail.com", "uteq zwwx vnzl fvyg")
-    s.sendmail("ericwaterhouse36@gmail.com", "eric.waterhouse26@houghton.edu", text)
+    s.login(email, password)
+    s.sendmail(email, password, text)
     s.quit()
     return {"message": "Email sent..."}
 
@@ -128,8 +128,9 @@ async def upload_mp3(file: UploadFile = File(...)):
     study = llm("Generate 10 study questions based on this lecture: " + text)
     s = smtplib.SMTP('smtp.gmail.com', 587)
     s.starttls()
-    s.login("ericwaterhouse36@gmail.com", "uteq zwwx vnzl fvyg")
-    s.sendmail("ericwaterhouse36@gmail.com", "eric.waterhouse26@houghton.edu", summary)
-    s.sendmail("ericwaterhouse36@gmail.com", "eric.waterhouse26@houghton.edu", study)
+    s.login(email, password)
+    s.sendmail(email, summary)
+    s.sendmail(email, study)
     s.quit()
+
     return {"message": "Emails sent. Hopefully this works!"}
